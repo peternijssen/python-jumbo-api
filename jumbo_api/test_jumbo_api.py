@@ -24,6 +24,11 @@ def main():
         print(delivery.status)
         print(delivery.delivery_date)
         print(delivery.delivery_time)
+        print(delivery.delivery_start_time)
+        print(delivery.delivery_end_time)
+        print(delivery.price_currency)
+        print(delivery.price_amount)
+        print(delivery.price)
 
     print("")
     print("CLOSED DELIVERIES")
@@ -33,11 +38,19 @@ def main():
         print(delivery.status)
         print(delivery.delivery_date)
         print(delivery.delivery_time)
+        print(delivery.delivery_start_time)
+        print(delivery.delivery_end_time)
+        print(delivery.price_currency)
+        print(delivery.price_amount)
+        print(delivery.price)
 
     print("")
     print("BASKET")
     basket = api.get_basket()
     print(basket.amount)
+    print(basket.price_currency)
+    print(basket.price_amount)
+    print(basket.price)
 
 
 if __name__ == '__main__':

@@ -4,9 +4,8 @@ import logging
 import time
 
 import requests
-
-from jumbo_api.objects.basket import Basket
-from jumbo_api.objects.delivery import Delivery
+from objects.basket import Basket
+from objects.delivery import Delivery
 
 BASE_URL = 'https://mobileapi.jumbo.com/'
 VERSION = 'v9'
