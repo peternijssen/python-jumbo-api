@@ -17,40 +17,32 @@ def main():
     password = args.password
     api = JumboApi(username, password)
 
+    print("PROFILE")
+    profile = api.get_profile()
+    print(profile)
+
+    print("")
     print("OPEN DELIVERIES")
     deliveries = api.get_open_deliveries()
     for delivery in deliveries:
-        print(delivery.id)
-        print(delivery.status)
-        print(delivery.delivery_date)
-        print(delivery.delivery_time)
-        print(delivery.delivery_start_time)
-        print(delivery.delivery_end_time)
-        print(delivery.price_currency)
-        print(delivery.price_amount)
-        print(delivery.price)
+        print(delivery)
 
     print("")
     print("CLOSED DELIVERIES")
     deliveries = api.get_closed_deliveries()
     for delivery in deliveries:
-        print(delivery.id)
-        print(delivery.status)
-        print(delivery.delivery_date)
-        print(delivery.delivery_time)
-        print(delivery.delivery_start_time)
-        print(delivery.delivery_end_time)
-        print(delivery.price_currency)
-        print(delivery.price_amount)
-        print(delivery.price)
+        print(delivery)
 
     print("")
     print("BASKET")
     basket = api.get_basket()
-    print(basket.amount)
-    print(basket.price_currency)
-    print(basket.price_amount)
-    print(basket.price)
+    print(basket)
+
+    print("")
+    print("OPEN TIMESLOTS")
+    time_slots = api.get_open_time_slots()
+    for time_slot in time_slots:
+        print(time_slot)
 
 
 if __name__ == '__main__':

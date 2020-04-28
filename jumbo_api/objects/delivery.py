@@ -17,3 +17,6 @@ class Delivery(object):
     @property
     def price(self):
         return self.price_currency + " " + str(self.price_amount / 100)
+
+    def __str__(self):
+        return f"{self.id} {self.status} {self.delivery_date} {self.delivery_time} {self.delivery_start_time} {self.delivery_end_time} {self.price_currency} {self.price_amount} {self.price}"
