@@ -4,7 +4,6 @@ import logging
 import time
 
 import requests
-
 from jumbo_api.objects.basket import Basket
 from jumbo_api.objects.delivery import Delivery
 from jumbo_api.objects.profile import Profile
