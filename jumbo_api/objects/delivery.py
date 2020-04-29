@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from jumbo_api.objects.price import Price
+
 
 class Delivery(object):
     def __init__(self, data):
@@ -11,12 +13,7 @@ class Delivery(object):
         self.delivery_time = data.get("delivery").get("time")
         self.delivery_start_time = datetime.fromtimestamp(int(data.get("delivery").get("startDateTime")) / 1000)
         self.delivery_end_time = datetime.fromtimestamp(int(data.get("delivery").get("endDateTime")) / 1000)
-        self.price_currency = data.get("prices").get("total").get("currency")
-        self.price_amount = data.get("prices").get("total").get("amount")
-
-    @property
-    def price(self):
-        return self.price_currency + " " + str(self.price_amount / 100)
+        self.price = Price(data.get("prices").get("total"))
 
     def __str__(self):
-        return f"{self.id} {self.status} {self.delivery_date} {self.delivery_time} {self.delivery_start_time} {self.delivery_end_time} {self.price_currency} {self.price_amount} {self.price}"
+        return f"{self.id} {self.status} {self.delivery_date} {self.delivery_time} {self.delivery_start_time} {self.delivery_end_time} {self.price}"
