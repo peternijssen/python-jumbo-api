@@ -82,7 +82,7 @@ class JumboApi(object):
 
         for order in response['orders']['data']:
             if order['type'] == "homeDelivery":
-                if order['status'] == "OPEN":
+                if order['status'] in ["OPEN", "PROCESSING"]:
                     self._open_deliveries[order['id']] = Delivery(order)
                 else:
                     self._closed_deliveries[order['id']] = Delivery(order)
