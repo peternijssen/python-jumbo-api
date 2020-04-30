@@ -9,3 +9,4 @@ This library is being used in Home Assistant as a [custom component](https://git
 
 ## Contributors
 * [Peter Nijssen](https://github.com/peternijssen)
+* [Rolf Berkenbosch](https://github.com/rolfberkenbosch)
