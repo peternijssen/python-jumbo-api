@@ -4,6 +4,9 @@ Use the same credentials as the ones you use for the app.
 
 This library is not affiliated with Jumbo and retrieves data from the endpoints of the mobile application. Use at your own risk.
 
+## Changelog
+See the [changelog](CHANGELOG.md) for more information.
+
 ## Home Assistant
 This library is being used in Home Assistant as a [custom component](https://github.com/peternijssen/home-asssistant-jumbo).
 
