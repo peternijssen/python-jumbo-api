@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='python-jumbo-api',
-    version='0.4.4',
-    description='Python wrapper for the Jumbo API, a way to view your Jumbo deliveries',
+    version='0.5.0',
+    description='Unofficial python wrapper for the Jumbo.com API, a way to view your orders, time slots and basket information',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://www.github.com/peternijssen/python-jumbo-api/',

@@ -4,8 +4,10 @@ import logging
 import time
 
 import requests
+
 from jumbo_api.objects.basket import Basket
 from jumbo_api.objects.delivery import Delivery
+from jumbo_api.objects.pick_up import PickUp
 from jumbo_api.objects.profile import Profile
 from jumbo_api.objects.time_slot import TimeSlot
 
@@ -14,7 +16,8 @@ VERSION = 'v9'
 
 AUTHENTICATE_URL = BASE_URL + VERSION + '/users/login'
 PROFILE_URL = BASE_URL + VERSION + '/users/me'
-TIME_SLOTS_URL = BASE_URL + VERSION + '/stores/slots?storeId={storeId}&fulfilment=homeDelivery'
+DELIVERY_TIME_SLOTS_URL = BASE_URL + VERSION + '/stores/slots?storeId={storeId}&fulfilment=homeDelivery'
+PICK_UP_TIME_SLOTS_URL = BASE_URL + VERSION + '/stores/slots?storeId={storeId}&fulfilment=collection'
 ORDERS_URL = BASE_URL + VERSION + '/users/me/orders'
 BASKET_URL = BASE_URL + VERSION + '/basket?withMOV=false'
 
@@ -35,8 +38,9 @@ class JumboApi(object):
         self._password = password
         self._profile = None
         self._open_deliveries = {}
-        self._closed_deliveries = {}
-        self._time_slots = []
+        self._open_pick_ups = {}
+        self._delivery_time_slots = []
+        self._pick_up_time_slots = []
         self._basket = None
         self._jumbo_token = None
         self._last_refresh = None
@@ -78,14 +82,16 @@ class JumboApi(object):
             return
 
         self._open_deliveries = {}
-        self._closed_deliveries = {}
 
         for order in response['orders']['data']:
-            if order['type'] == "homeDelivery":
-                if order['status'] in ["OPEN", "PROCESSING", "READY_TO_DELIVER"]:
+            # TODO: I am not sure if "READY_TO_PICK_UP" is a status for pick ups
+            if order['status'] in ["OPEN", "PROCESSING", "READY_TO_DELIVER", "READY_TO_PICK_UP"]:
+                # DELIVERIES
+                if order['type'] == "homeDelivery":
                     self._open_deliveries[order['id']] = Delivery(order)
-                else:
-                    self._closed_deliveries[order['id']] = Delivery(order)
+                # PICK UPS
+                elif order['type'] == "collection":
+                    self._open_pick_ups[order['id']] = PickUp(order)
 
     def _update_basket(self):
         """ Retrieve basket """
@@ -100,8 +106,13 @@ class JumboApi(object):
         self._basket = Basket(response['basket']['data'])
 
     def _update_time_slots(self):
-        """ Retrieve time slots """
-        response = self._request_update(TIME_SLOTS_URL.format(storeId=self._profile.store.id))
+        """ Update all time slots """
+        self._update_delivery_time_slots()
+        self._update_pick_up_time_slots()
+
+    def _update_delivery_time_slots(self):
+        """ Retrieve delivery time slots """
+        response = self._request_update(DELIVERY_TIME_SLOTS_URL.format(storeId=self._profile.store.id))
 
         if response['timeSlots'] is False:
             return
@@ -109,12 +120,27 @@ class JumboApi(object):
         if response['timeSlots']['data'] is False:
             return
 
-        self._time_slots = []
+        self._delivery_time_slots = []
 
         for day in response['timeSlots']['data']:
             for time_slot in day['timeSlots']:
-                if time_slot['type'] == "HOMEDELIVERY":
-                    self._time_slots.append(TimeSlot(time_slot))
+                self._delivery_time_slots.append(TimeSlot(time_slot))
+
+    def _update_pick_up_time_slots(self):
+        """ Retrieve pick up time slots """
+        response = self._request_update(PICK_UP_TIME_SLOTS_URL.format(storeId=self._profile.store.id))
+
+        if response['timeSlots'] is False:
+            return
+
+        if response['timeSlots']['data'] is False:
+            return
+
+        self._pick_up_time_slots = []
+
+        for day in response['timeSlots']['data']:
+            for time_slot in day['timeSlots']:
+                self._pick_up_time_slots.append(TimeSlot(time_slot))
 
     def get_profile(self):
         """ Get your personal profile """
@@ -126,23 +152,33 @@ class JumboApi(object):
         self._update()
         return self._open_deliveries.values()
 
-    def get_closed_deliveries(self):
-        """ Get all closed deliveries """
+    def get_open_pick_ups(self):
+        """ Get all open pick ups """
         self._update()
-        return self._closed_deliveries.values()
+        return self._open_pick_ups.values()
 
     def get_basket(self):
         """ Get your current basket """
         self._update()
         return self._basket
 
-    def get_open_time_slots(self):
-        """" Get current open time slots """
+    def get_open_delivery_time_slots(self):
+        """" Get current open delivery time slots """
         self._update()
 
         return [
             ts
-            for ts in self._time_slots
+            for ts in self._delivery_time_slots
+            if ts.is_available
+        ]
+
+    def get_open_pick_up_time_slots(self):
+        """" Get current open pick up time slots """
+        self._update()
+
+        return [
+            ts
+            for ts in self._pick_up_time_slots
             if ts.is_available
         ]
 

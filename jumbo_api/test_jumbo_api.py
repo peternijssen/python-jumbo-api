@@ -28,10 +28,10 @@ def main():
         print(delivery)
 
     print("")
-    print("CLOSED DELIVERIES")
-    deliveries = api.get_closed_deliveries()
-    for delivery in deliveries:
-        print(delivery)
+    print("OPEN PICK UPS")
+    pick_ups = api.get_open_pick_ups()
+    for pick_up in pick_ups:
+        print(pick_up)
 
     print("")
     print("BASKET")
@@ -39,8 +39,14 @@ def main():
     print(basket)
 
     print("")
-    print("OPEN TIMESLOTS")
-    time_slots = api.get_open_time_slots()
+    print("OPEN DELIVERY TIME SLOTS")
+    time_slots = api.get_open_delivery_time_slots()
+    for time_slot in time_slots:
+        print(time_slot)
+
+    print("")
+    print("OPEN PICK UP TIME SLOTS")
+    time_slots = api.get_open_pick_up_time_slots()
     for time_slot in time_slots:
         print(time_slot)
 
