@@ -27,6 +27,10 @@ REFRESH_RATE = 120
 
 _LOGGER = logging.getLogger(__name__)
 
+# ERROR CODES
+# 4014 = Invalid Username and/or Password
+# 4019 = No Slots For Date Requested
+
 
 class JumboApi(object):
     """ Interface class for the Jumbo API """
@@ -63,10 +67,10 @@ class JumboApi(object):
         """ Retrieve profile """
         response = self._request_update(PROFILE_URL)
 
-        if response['user'] is False:
+        if 'user' not in response:
             return
 
-        if response['user']['data'] is False:
+        if 'data' not in response['user']:
             return
 
         self._profile = Profile(response['user']['data'])
@@ -75,10 +79,10 @@ class JumboApi(object):
         """ Retrieve orders """
         response = self._request_update(ORDERS_URL)
 
-        if response['orders'] is False:
+        if 'orders' not in response:
             return
 
-        if response['orders']['data'] is False:
+        if 'data' not in response['orders']:
             return
 
         self._open_deliveries = {}
@@ -97,10 +101,10 @@ class JumboApi(object):
         """ Retrieve basket """
         response = self._request_update(BASKET_URL)
 
-        if response['basket'] is False:
+        if 'basket' not in response:
             return
 
-        if response['basket']['data'] is False:
+        if 'data' not in response['basket']:
             return
 
         self._basket = Basket(response['basket']['data'])
@@ -114,10 +118,10 @@ class JumboApi(object):
         """ Retrieve delivery time slots """
         response = self._request_update(DELIVERY_TIME_SLOTS_URL.format(storeId=self._profile.store.id))
 
-        if response['timeSlots'] is False:
+        if 'timeSlots' not in response:
             return
 
-        if response['timeSlots']['data'] is False:
+        if 'data' not in response['timeSlots']:
             return
 
         self._delivery_time_slots = []
@@ -130,10 +134,10 @@ class JumboApi(object):
         """ Retrieve pick up time slots """
         response = self._request_update(PICK_UP_TIME_SLOTS_URL.format(storeId=self._profile.store.id))
 
-        if response['timeSlots'] is False:
+        if 'timeSlots' not in response:
             return
 
-        if response['timeSlots']['data'] is False:
+        if 'data' not in response['timeSlots']:
             return
 
         self._pick_up_time_slots = []
@@ -196,8 +200,13 @@ class JumboApi(object):
         response = requests.request("GET", url, headers={**headers, **DEFAULT_HEADERS})
 
         if response.status_code != 200:
-            _LOGGER.error("Unable to perform request " + str(response.content))
-            return False
+            data = response.json()
+            if 'code' in data:
+                _LOGGER.error("Error code: " + data['code'])
+                _LOGGER.error("Reason: " + data['message'])
+            else:
+                _LOGGER.error("Unable to perform request. Response: " + data)
+            return {}
 
         return response.json()
 

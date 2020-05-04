@@ -1,6 +1,16 @@
 # CHANGELOG
 
-## Unreleased
+## [0.5.2] - 2020-05-04
+### Added
+  - Add store latitude and longitude
+  
+### Fixed
+  - Fixed error handling when Jumbo API throws an error
+
+## [0.5.1] - 2020-05-02
+### Fixed
+  - Fixed error handling when Jumbo API throws an error
+
 
 ## [0.5.0] - 2020-05-02
 ### Added

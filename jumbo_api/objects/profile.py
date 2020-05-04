@@ -7,4 +7,4 @@ class Profile(object):
         self.store = Store(data.get("store"))
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id} {self.store}"
