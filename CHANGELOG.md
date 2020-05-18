@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [0.5.3] - 2020-05-18
+## [0.5.5] - 2020-05-18
 ### Fixed
   - Add missing zero in prices
 

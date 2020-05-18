@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from objects.price import Price
+from jumbo_api.objects.price import Price
 
 
 class TimeSlot(object):

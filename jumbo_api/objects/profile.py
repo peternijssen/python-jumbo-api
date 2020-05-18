@@ -1,4 +1,4 @@
-from objects.store import Store
+from jumbo_api.objects.store import Store
 
 
 class Profile(object):
