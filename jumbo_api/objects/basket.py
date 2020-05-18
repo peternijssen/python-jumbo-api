@@ -1,4 +1,4 @@
-from jumbo_api.objects.price import Price
+from objects.price import Price
 
 
 class Basket(object):

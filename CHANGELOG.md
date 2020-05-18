@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [0.5.3] - 2020-05-18
+### Fixed
+  - Add missing zero in prices
+
 ## [0.5.2] - 2020-05-04
 ### Added
   - Add store latitude and longitude

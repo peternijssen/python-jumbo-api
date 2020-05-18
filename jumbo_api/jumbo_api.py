@@ -5,11 +5,11 @@ import time
 
 import requests
 
-from jumbo_api.objects.basket import Basket
-from jumbo_api.objects.delivery import Delivery
-from jumbo_api.objects.pick_up import PickUp
-from jumbo_api.objects.profile import Profile
-from jumbo_api.objects.time_slot import TimeSlot
+from objects.basket import Basket
+from objects.delivery import Delivery
+from objects.pick_up import PickUp
+from objects.profile import Profile
+from objects.time_slot import TimeSlot
 
 BASE_URL = 'https://mobileapi.jumbo.com/'
 VERSION = 'v9'

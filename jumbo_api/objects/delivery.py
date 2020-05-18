@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from jumbo_api.objects.price import Price
+from objects.price import Price
 
 
 class Delivery(object):
