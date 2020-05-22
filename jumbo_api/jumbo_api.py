@@ -49,7 +49,6 @@ class JumboApi(object):
         self._jumbo_token = None
         self._last_refresh = None
         self._refresh_rate = refresh_rate
-        self._request_login()
 
     def _update(self):
         """ Update the cache """

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [0.5.6] - 2020-05-22
+### Fixed
+  - Removed blocking event in init
+
 ## [0.5.5] - 2020-05-18
 ### Fixed
   - Add missing zero in prices
