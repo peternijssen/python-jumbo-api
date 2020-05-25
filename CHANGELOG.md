@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [0.6.0] - 2020-05-25
+### Added
+  - Added the cut off date for an order
+
 ## [0.5.6] - 2020-05-22
 ### Fixed
   - Removed blocking event in init

@@ -19,6 +19,7 @@ PROFILE_URL = BASE_URL + VERSION + '/users/me'
 DELIVERY_TIME_SLOTS_URL = BASE_URL + VERSION + '/stores/slots?storeId={storeId}&fulfilment=homeDelivery'
 PICK_UP_TIME_SLOTS_URL = BASE_URL + VERSION + '/stores/slots?storeId={storeId}&fulfilment=collection'
 ORDERS_URL = BASE_URL + VERSION + '/users/me/orders'
+ORDER_DETAILS_URL = BASE_URL + VERSION + '/users/me/orders/{orderId}'
 BASKET_URL = BASE_URL + VERSION + '/basket?withMOV=false'
 
 DEFAULT_HEADERS = {}
@@ -87,14 +88,15 @@ class JumboApi(object):
         self._open_deliveries = {}
 
         for order in response['orders']['data']:
+            details = self._get_order_details(order['id'])
             # TODO: I am not sure if "READY_TO_PICK_UP" is a status for pick ups
             if order['status'] in ["OPEN", "PROCESSING", "READY_TO_DELIVER", "READY_TO_PICK_UP"]:
                 # DELIVERIES
                 if order['type'] == "homeDelivery":
-                    self._open_deliveries[order['id']] = Delivery(order)
+                    self._open_deliveries[order['id']] = Delivery(order, details)
                 # PICK UPS
                 elif order['type'] == "collection":
-                    self._open_pick_ups[order['id']] = PickUp(order)
+                    self._open_pick_ups[order['id']] = PickUp(order, details)
 
     def _update_basket(self):
         """ Retrieve basket """
@@ -144,6 +146,18 @@ class JumboApi(object):
         for day in response['timeSlots']['data']:
             for time_slot in day['timeSlots']:
                 self._pick_up_time_slots.append(TimeSlot(time_slot))
+
+    def _get_order_details(self, order_id):
+        """ Get details for your order """
+        response = self._request_update(ORDER_DETAILS_URL.format(orderId=order_id))
+
+        if 'order' not in response:
+            return
+
+        if 'data' not in response['order']:
+            return
+
+        return response['order']['data']
 
     def get_profile(self):
         """ Get your personal profile """
