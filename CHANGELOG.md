@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [0.6.1] - 2020-08-22
+### Fixed
+  - Fixed an issue with logging in
+
 ## [0.6.0] - 2020-05-25
 ### Added
   - Added the cut off date for an order

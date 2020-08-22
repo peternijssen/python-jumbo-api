@@ -12,7 +12,7 @@ from jumbo_api.objects.profile import Profile
 from jumbo_api.objects.time_slot import TimeSlot
 
 BASE_URL = 'https://mobileapi.jumbo.com/'
-VERSION = 'v9'
+VERSION = 'v12'
 
 AUTHENTICATE_URL = BASE_URL + VERSION + '/users/login'
 PROFILE_URL = BASE_URL + VERSION + '/users/me'
@@ -22,7 +22,9 @@ ORDERS_URL = BASE_URL + VERSION + '/users/me/orders'
 ORDER_DETAILS_URL = BASE_URL + VERSION + '/users/me/orders/{orderId}'
 BASKET_URL = BASE_URL + VERSION + '/basket?withMOV=false'
 
-DEFAULT_HEADERS = {}
+DEFAULT_HEADERS = {
+    "User-Agent": "Jumbo/7.5.2 (python-jumbo-api)"
+}
 
 REFRESH_RATE = 120
 
@@ -235,10 +237,9 @@ class JumboApi(object):
 
         try:
             response = requests.request(
-                'POST', AUTHENTICATE_URL, data=payload, headers=headers)
+                'POST', AUTHENTICATE_URL, data=payload, headers={**headers, **DEFAULT_HEADERS})
             data = response.json()
             headers = response.headers
-
         except Exception:
             raise (UnauthorizedException())
 
