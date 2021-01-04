@@ -2,6 +2,7 @@
 
 import logging
 import time
+import datetime
 
 import requests
 
@@ -23,7 +24,7 @@ ORDER_DETAILS_URL = BASE_URL + VERSION + '/users/me/orders/{orderId}'
 BASKET_URL = BASE_URL + VERSION + '/basket?withMOV=false'
 
 DEFAULT_HEADERS = {
-    "User-Agent": "Jumbo/7.5.2 (python-jumbo-api)"
+    "User-Agent": "Jumbo/7.9.2 (python-jumbo-api)"
 }
 
 REFRESH_RATE = 120
@@ -40,7 +41,6 @@ class JumboApi(object):
 
     def __init__(self, user, password, refresh_rate=REFRESH_RATE):
         """ Constructor """
-
         self._user = user
         self._password = password
         self._profile = None
@@ -64,15 +64,18 @@ class JumboApi(object):
             self._update_basket()
             self._update_time_slots()
             self._last_refresh = int(time.time())
+            _LOGGER.debug(f"Refresh of data performed at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     def _update_profile(self):
         """ Retrieve profile """
         response = self._request_update(PROFILE_URL)
 
         if 'user' not in response:
+            _LOGGER.debug(f"Unable to find profile")
             return
 
         if 'data' not in response['user']:
+            _LOGGER.debug(f"Unable to find profile")
             return
 
         self._profile = Profile(response['user']['data'])
@@ -82,17 +85,21 @@ class JumboApi(object):
         response = self._request_update(ORDERS_URL)
 
         if 'orders' not in response:
+            _LOGGER.debug(f"Unable to find orders")
             return
 
         if 'data' not in response['orders']:
+            _LOGGER.debug(f"Unable to find orders")
             return
 
         self._open_deliveries = {}
 
         for order in response['orders']['data']:
-            details = self._get_order_details(order['id'])
             # TODO: I am not sure if "READY_TO_PICK_UP" is a status for pick ups
+            # Status "PICKED_UP" confirms both deliveries and pick ups as done
             if order['status'] in ["OPEN", "PROCESSING", "READY_TO_DELIVER", "READY_TO_PICK_UP"]:
+                _LOGGER.debug(f"Processing {order['type']} with id {order['id']} and status {order['status']}")
+                details = self._get_order_details(order['id'])
                 # DELIVERIES
                 if order['type'] == "homeDelivery":
                     self._open_deliveries[order['id']] = Delivery(order, details)
@@ -105,9 +112,11 @@ class JumboApi(object):
         response = self._request_update(BASKET_URL)
 
         if 'basket' not in response:
+            _LOGGER.debug(f"Unable to find basket")
             return
 
         if 'data' not in response['basket']:
+            _LOGGER.debug(f"Unable to find basket")
             return
 
         self._basket = Basket(response['basket']['data'])
@@ -122,9 +131,11 @@ class JumboApi(object):
         response = self._request_update(DELIVERY_TIME_SLOTS_URL.format(storeId=self._profile.store.id))
 
         if 'timeSlots' not in response:
+            _LOGGER.debug(f"Unable to find delivery time slots")
             return
 
         if 'data' not in response['timeSlots']:
+            _LOGGER.debug(f"Unable to find delivery time slots")
             return
 
         self._delivery_time_slots = []
@@ -138,9 +149,11 @@ class JumboApi(object):
         response = self._request_update(PICK_UP_TIME_SLOTS_URL.format(storeId=self._profile.store.id))
 
         if 'timeSlots' not in response:
+            _LOGGER.debug(f"Unable to find pick up time slots")
             return
 
         if 'data' not in response['timeSlots']:
+            _LOGGER.debug(f"Unable to find pick up time slots")
             return
 
         self._pick_up_time_slots = []
@@ -154,9 +167,11 @@ class JumboApi(object):
         response = self._request_update(ORDER_DETAILS_URL.format(orderId=order_id))
 
         if 'order' not in response:
+            _LOGGER.debug(f"Unable to find details for {order_id}")
             return
 
         if 'data' not in response['order']:
+            _LOGGER.debug(f"Unable to find details for {order_id}")
             return
 
         return response['order']['data']
@@ -205,8 +220,6 @@ class JumboApi(object):
         """ Perform a request to update information """
         if self._jumbo_token is None:
             self._request_login()
-
-        _LOGGER.debug("Requesting update from " + url)
 
         headers = {
             "x-jumbo-token": self._jumbo_token,

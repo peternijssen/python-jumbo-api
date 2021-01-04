@@ -5,11 +5,11 @@ from jumbo_api.objects.price import Price
 
 class PickUp(object):
     def __init__(self, data, details):
-        delivery_date = datetime.fromtimestamp(int(data.get("pickup").get("date")) / 1000)
+        date = datetime.fromtimestamp(int(data.get("pickup").get("date")) / 1000)
 
         self.id = data.get("id")
         self.status = data.get("status").lower()
-        self.date = delivery_date.strftime("%Y-%m-%d")
+        self.date = date.strftime("%Y-%m-%d")
         self.time = data.get("pickup").get("time")
         self.start_time = datetime.fromtimestamp(int(data.get("pickup").get("startDateTime")) / 1000)
         self.end_time = datetime.fromtimestamp(int(data.get("pickup").get("endDateTime")) / 1000)
