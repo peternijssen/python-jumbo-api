@@ -13,18 +13,21 @@ from jumbo_api.objects.profile import Profile
 from jumbo_api.objects.time_slot import TimeSlot
 
 BASE_URL = 'https://mobileapi.jumbo.com/'
-VERSION = 'v12'
+VERSION = 'v13'
 
 AUTHENTICATE_URL = BASE_URL + VERSION + '/users/login'
 PROFILE_URL = BASE_URL + VERSION + '/users/me'
 DELIVERY_TIME_SLOTS_URL = BASE_URL + VERSION + '/stores/slots?storeId={storeId}&fulfilment=homeDelivery'
 PICK_UP_TIME_SLOTS_URL = BASE_URL + VERSION + '/stores/slots?storeId={storeId}&fulfilment=collection'
 ORDERS_URL = BASE_URL + VERSION + '/users/me/orders'
+ORDERS_RELEVANT_URL = ORDERS_URL + '?relevant=true'
 ORDER_DETAILS_URL = BASE_URL + VERSION + '/users/me/orders/{orderId}'
 BASKET_URL = BASE_URL + VERSION + '/basket?withMOV=false'
 
 DEFAULT_HEADERS = {
-    "User-Agent": "Jumbo/7.9.2 (python-jumbo-api)"
+    "User-Agent": "Jumbo/8.1.1 (python-jumbo-api)",
+    "X-jumbo-store": "",
+    "X-jumbo-assortmentid": ""
 }
 
 REFRESH_RATE = 120
@@ -82,21 +85,14 @@ class JumboApi(object):
 
     def _update_orders(self):
         """ Retrieve orders """
-        response = self._request_update(ORDERS_URL)
-
-        if 'orders' not in response:
-            _LOGGER.debug(f"Unable to find orders")
-            return
-
-        if 'data' not in response['orders']:
-            _LOGGER.debug(f"Unable to find orders")
-            return
+        orders = self._request_orders()
 
         self._open_deliveries = {}
 
-        for order in response['orders']['data']:
+        for order in orders:
             # TODO: I am not sure if "READY_TO_PICK_UP" is a status for pick ups
             # Status "PICKED_UP" confirms both deliveries and pick ups as done
+            # Status "CANCELLED" confirms cancelled orders
             if order['status'] in ["OPEN", "PROCESSING", "READY_TO_DELIVER", "READY_TO_PICK_UP"]:
                 _LOGGER.debug(f"Processing {order['type']} with id {order['id']} and status {order['status']}")
                 details = self._get_order_details(order['id'])
@@ -216,13 +212,34 @@ class JumboApi(object):
             if ts.is_available
         ]
 
+    def _request_orders(self):
+        """ Perform a request to update orders """
+        all_orders = self._request_update(ORDERS_URL)
+        relevant_orders = self._request_update(ORDERS_RELEVANT_URL)
+
+        if 'orders' not in all_orders:
+            all_orders['orders'] = []
+
+        if 'data' not in all_orders['orders']:
+            all_orders['orders']['data'] = []
+
+        if 'orders' not in relevant_orders:
+            relevant_orders['orders'] = []
+
+        if 'data' not in relevant_orders['orders']:
+            relevant_orders['orders']['data'] = []
+
+        orders = {x['id']: x for x in all_orders['orders']['data'] + relevant_orders['orders']['data']}.values()
+
+        return orders
+
     def _request_update(self, url):
         """ Perform a request to update information """
         if self._jumbo_token is None:
             self._request_login()
 
         headers = {
-            "x-jumbo-token": self._jumbo_token,
+            "X-jumbo-token": self._jumbo_token,
             "Content-Type": "application/json",
         }
         response = requests.request("GET", url, headers={**headers, **DEFAULT_HEADERS})
@@ -259,10 +276,10 @@ class JumboApi(object):
         if 'code' in data:
             raise UnauthorizedException(data['message'])
 
-        if 'x-jumbo-token' not in headers:
+        if 'X-jumbo-token' not in headers:
             raise UnauthorizedException("Unknown error occurred: No token found")
 
-        self._jumbo_token = headers['x-jumbo-token']
+        self._jumbo_token = headers['X-jumbo-token']
 
 
 class UnauthorizedException(Exception):

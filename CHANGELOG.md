@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [0.7.0] - 2021-03-22
+### Added
+  - Added start, end and live ETA dates
+  - Added additional logging
+
+### Changes
+  - Updated API version to V13
+  - Updated User-Agent to 8.1.1
+
+### Fixed
+  - Fixed potential issues when unexpected data is returned
+
 ## [0.6.1] - 2020-08-22
 ### Fixed
   - Fixed an issue with logging in
@@ -26,7 +38,6 @@
 ## [0.5.1] - 2020-05-02
 ### Fixed
   - Fixed error handling when Jumbo API throws an error
-
 
 ## [0.5.0] - 2020-05-02
 ### Added
