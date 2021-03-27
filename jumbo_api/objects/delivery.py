@@ -20,17 +20,17 @@ class Delivery(object):
         if self.date is not None:
             self.date = datetime.fromtimestamp(int(self.date) / 1000).strftime("%Y-%m-%d")
         if self.start_time is not None:
-            self.start_time = datetime.fromtimestamp(int(self.start_time) / 1000)
+            self.start_time = datetime.fromtimestamp(int(self.start_time) / 1000).strftime("%H:%M")
         if self.end_time is not None:
-            self.end_time = datetime.fromtimestamp(int(self.end_time) / 1000)
+            self.end_time = datetime.fromtimestamp(int(self.end_time) / 1000).strftime("%H:%M")
         if self.cut_off_date is not None:
             self.cut_off_date = datetime.fromtimestamp(int(self.cut_off_date) / 1000)
         if self.eta_start is not None:
-            self.eta_start = datetime.fromtimestamp(int(self.eta_start) / 1000)
+            self.eta_start = datetime.fromtimestamp(int(self.eta_start) / 1000).strftime("%H:%M")
         if self.eta_end is not None:
-            self.eta_end = datetime.fromtimestamp(int(self.eta_end) / 1000)
+            self.eta_end = datetime.fromtimestamp(int(self.eta_end) / 1000).strftime("%H:%M")
         if self.eta_live is not None:
-            self.eta_live = datetime.fromtimestamp(int(self.eta_live) / 1000)
+            self.eta_live = datetime.fromtimestamp(int(self.eta_live) / 1000).strftime("%H:%M")
 
     def __str__(self):
         return f"{self.id} {self.status} {self.date} {self.time} {self.start_time} {self.end_time} {self.cut_off_date} {self.eta_start} {self.eta_end} {self.eta_live} {self.price}"

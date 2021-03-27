@@ -1,4 +1,7 @@
 # CHANGELOG
+## [0.8.0] - 2021-03-22
+### Changes
+  - Changed start_time, end_time, eta_start, eta_end and eta_live to time only
 
 ## [0.7.0] - 2021-03-22
 ### Added
