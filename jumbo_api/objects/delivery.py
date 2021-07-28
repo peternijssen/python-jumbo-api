@@ -4,14 +4,14 @@ from jumbo_api.objects.price import Price
 
 
 class Delivery(object):
-    def __init__(self, data, details):
+    def __init__(self, data):
         self.id = data.get("id")
         self.status = data.get("status", "Unknown").lower()
         self.time = data.get("delivery", {}).get("time")
         self.date = data.get("delivery", {}).get("date")
         self.start_time = data.get("delivery", {}).get("startDateTime")
         self.end_time = data.get("delivery", {}).get("endDateTime")
-        self.cut_off_date = details.get("orderCutOffDate")
+        self.cut_off_date = data.get("orderCutOffDate")
         self.eta_start = data.get("shipping", {}).get("plannedETAStart")
         self.eta_end = data.get("shipping", {}).get("plannedETAEnd")
         self.eta_live = data.get("shipping", {}).get("liveETA")

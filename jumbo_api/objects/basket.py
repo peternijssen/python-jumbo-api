@@ -3,7 +3,7 @@ from jumbo_api.objects.price import Price
 
 class Basket(object):
     def __init__(self, data):
-        self.amount = len(data.get('items'))
+        self.amount = len(data.get('products'))
         self.price = Price(data.get("prices").get('total'))
 
     def __str__(self):

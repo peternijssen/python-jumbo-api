@@ -1,4 +1,11 @@
 # CHANGELOG
+## [0.9.0] - 2021-07-28
+### Changes
+  - Updated API version to V15
+  - Updated User-Agent to 8.6.2
+  - Updated basket retrieval
+  - Updated order cut off date retrieval
+
 ## [0.8.0] - 2021-03-22
 ### Changes
   - Changed start_time, end_time, eta_start, eta_end and eta_live to time only

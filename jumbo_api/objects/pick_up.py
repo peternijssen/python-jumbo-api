@@ -4,14 +4,14 @@ from jumbo_api.objects.price import Price
 
 
 class PickUp(object):
-    def __init__(self, data, details):
+    def __init__(self, data):
         self.id = data.get("id")
         self.status = data.get("status", "Unknown").lower()
         self.time = data.get("pickup", {}).get("time")
         self.date = data.get("pickup", {}).get("date")
         self.start_time = data.get("pickup", {}).get("startDateTime")
         self.end_time = data.get("pickup", {}).get("endDateTime")
-        self.cut_off_date = details.get("orderCutOffDate")
+        self.cut_off_date = data.get("orderCutOffDate")
         self.price = Price(data.get("prices", {}).get("total"))
 
         if self.date is not None:

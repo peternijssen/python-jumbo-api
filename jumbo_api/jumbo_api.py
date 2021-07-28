@@ -13,20 +13,20 @@ from jumbo_api.objects.profile import Profile
 from jumbo_api.objects.time_slot import TimeSlot
 
 BASE_URL = 'https://mobileapi.jumbo.com/'
-VERSION = 'v13'
+VERSION = 'v15'
 
 AUTHENTICATE_URL = BASE_URL + VERSION + '/users/login'
 PROFILE_URL = BASE_URL + VERSION + '/users/me'
 DELIVERY_TIME_SLOTS_URL = BASE_URL + VERSION + '/stores/slots?storeId={storeId}&fulfilment=homeDelivery'
 PICK_UP_TIME_SLOTS_URL = BASE_URL + VERSION + '/stores/slots?storeId={storeId}&fulfilment=collection'
-ORDERS_URL = BASE_URL + VERSION + '/users/me/orders'
-ORDERS_RELEVANT_URL = ORDERS_URL + '?relevant=true'
+ORDERS_URL = BASE_URL + VERSION + '/users/me/orders?offset=0&count=10'
+ORDERS_RELEVANT_URL = BASE_URL + VERSION + '/users/me/orders?relevant=true'
 ORDER_DETAILS_URL = BASE_URL + VERSION + '/users/me/orders/{orderId}'
-BASKET_URL = BASE_URL + VERSION + '/basket?withMOV=false'
+BASKET_URL = BASE_URL + VERSION + '/basket?calculateTotals=true&store_id={storeId}'
 
 DEFAULT_HEADERS = {
-    "User-Agent": "Jumbo/8.1.1 (python-jumbo-api)",
-    "X-jumbo-store": "",
+    "User-Agent": "Jumbo/8.6.2 (python-jumbo-api)",
+    "X-jumbo-store": "national",
     "X-jumbo-assortmentid": ""
 }
 
@@ -95,27 +95,18 @@ class JumboApi(object):
             # Status "CANCELLED" confirms cancelled orders
             if order['status'] in ["OPEN", "PROCESSING", "READY_TO_DELIVER", "READY_TO_PICK_UP"]:
                 _LOGGER.debug(f"Processing {order['type']} with id {order['id']} and status {order['status']}")
-                details = self._get_order_details(order['id'])
                 # DELIVERIES
                 if order['type'] == "homeDelivery":
-                    self._open_deliveries[order['id']] = Delivery(order, details)
+                    self._open_deliveries[order['id']] = Delivery(order)
                 # PICK UPS
                 elif order['type'] == "collection":
-                    self._open_pick_ups[order['id']] = PickUp(order, details)
+                    self._open_pick_ups[order['id']] = PickUp(order)
 
     def _update_basket(self):
         """ Retrieve basket """
-        response = self._request_update(BASKET_URL)
+        response = self._request_update(BASKET_URL.format(storeId=self._profile.store.id))
 
-        if 'basket' not in response:
-            _LOGGER.debug(f"Unable to find basket")
-            return
-
-        if 'data' not in response['basket']:
-            _LOGGER.debug(f"Unable to find basket")
-            return
-
-        self._basket = Basket(response['basket']['data'])
+        self._basket = Basket(response)
 
     def _update_time_slots(self):
         """ Update all time slots """
